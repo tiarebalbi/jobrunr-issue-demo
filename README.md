@@ -25,4 +25,4 @@ Now leave it running in a few minutes error should be there.
 
 API link created:
 
-* http://localhost:9050/tasks# jobrunr-issue-demo
+* http://localhost:9050/tasks
