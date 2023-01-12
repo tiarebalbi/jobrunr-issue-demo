@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: demo-service
+  namespace: jobrunr
+  labels:
+    app: demo-service
+    spring-boot: "true"
+spec:
+  type: ClusterIP
+  ports:
+    - port: 9050
+      name: http
+  selector:
+    app: demo-deployment

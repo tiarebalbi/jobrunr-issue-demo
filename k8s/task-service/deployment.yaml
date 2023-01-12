@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo-deployment-v1
+  namespace: jobrunr
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: demo-deployment
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: demo-deployment
+        version: v1
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9050"
+        sidecar.istio.io/inject: "true"
+        prometheus.io/path: "/actuator/prometheus"
+        kiali.io/dashboards: springboot-tomcat,springboot-jvm,springboot-jvm-pool
+    spec:
+      containers:
+        - name: demo-container
+          image: tiarebalbi/demo:1.0.1
+          resources:
+            requests:
+              cpu: 400m
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 9050
+            initialDelaySeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 9050
+            initialDelaySeconds: 30
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 9050
+            - containerPort: 8050
+          env:
+            - name: VERSION
+              value: "v1"
+            - name: SPRING_PROFILES_ACTIVE
+              value: "prod"
+            - name: SPRING_DATA_MONGODB_URI
+              value: "mongodb://admin:admin@mongodb:27017/?authSource=admin&authMechanism=SCRAM-SHA-1"
+            - name: SPRING_DATA_MONGODB_USERNAME
+              value: "admin"
+            - name: SPRING_DATA_MONGODB_PASSWORD
+              value: "admin"
